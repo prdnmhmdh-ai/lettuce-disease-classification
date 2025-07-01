@@ -364,7 +364,7 @@
 
         const imageData = canvas.toDataURL("image/jpeg");
 
-        fetch('/detect', {
+        fetch('/', {
             method: 'POST',
             body: JSON.stringify({ camera_image: imageData }),
             headers: {
@@ -391,7 +391,7 @@
             reader.onloadend = () => {
                 const imageData = reader.result;
 
-                fetch('/detect', {
+                fetch('/', {
                     method: 'POST',
                     body: JSON.stringify({ camera_image: imageData }),
                     headers: {
