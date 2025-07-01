@@ -414,6 +414,29 @@
             reader.readAsDataURL(file);
         }
     });
+    document.getElementById("submitImage").addEventListener("click", () => {
+        const fileInput = document.getElementById("fileInput");
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("/", {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("File uploaded successfully", data);
+            alert("File uploaded! Image URL: " + data.image_url);  // Menampilkan URL gambar
+            const img = document.getElementById("annotatedImage");
+            img.src = data.image_url;  // Menampilkan gambar yang telah di-upload
+            img.style.display = "block";  // Menampilkan gambar
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    });
+
 </script>
 
 </body>

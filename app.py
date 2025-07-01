@@ -1,5 +1,6 @@
 import os
 import base64
+import requests
 from flask import Flask, send_from_directory, render_template, request, jsonify
 from inference_sdk import InferenceHTTPClient
 from PIL import Image
@@ -13,30 +14,51 @@ import numpy as np
 app = Flask(__name__, static_folder='assets')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['RESULT_FOLDER'] = 'static/results'
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max size for uploaded images
 
 CLIENT = InferenceHTTPClient(
     api_url="https://serverless.roboflow.com",
     api_key="zHXvPR4wY6HIpFlHqkFg"
 )
 
+# Pastikan folder untuk upload dan result ada
 for folder in [app.config['UPLOAD_FOLDER'], app.config['RESULT_FOLDER']]:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-@app.route("/")
-def index():
-    return send_from_directory(os.getcwd(), "index.html")
+# Fungsi untuk upload file ke Vercel Blob
+def upload_to_vercel_blob(file_path):
+    with open(file_path, 'rb') as f:
+        file_data = f.read()
 
-@app.route('/static/results/<path:filename>')
+    # Gantilah dengan token API Vercel kamu
+    headers = {
+        "Authorization": "Bearer YOUR_VERCEL_API_TOKEN",  # Ganti dengan token API Vercel kamu
+    }
+
+    url = "https://api.vercel.com/v1/storage/your_project_name/files"  # Sesuaikan dengan URL Vercel API kamu
+    files = {'file': (os.path.basename(file_path), file_data)}
+    
+    response = requests.post(url, headers=headers, files=files)
+
+    if response.status_code == 200:
+        return response.json()['url']  # Mengembalikan URL file di Vercel Blob
+    else:
+        return None
+
+@app.route("/static/results/<path:filename>")
 def serve_result_image(filename):
     return send_from_directory('static/results', filename)
 
-@app.route('/static/uploads/<path:filename>')
+@app.route("/static/uploads/<path:filename>")
 def serve_upload_image(filename):
     return send_from_directory('static/uploads', filename)
 
-@app.route('/', methods=['POST'])
+@app.route("/", methods=["GET"])
+def index():
+    return send_from_directory(os.getcwd(), "index.html")
+
+@app.route("/", methods=["POST"])
 def detect():
     try:
         # Terima gambar dari kamera atau upload
@@ -75,10 +97,10 @@ def detect():
             })
 
         # Konversi prediksi ke objek Detections
-        xyxy = np.array([
-            [pred["x"] - pred["width"] / 2,
-             pred["y"] - pred["height"] / 2,
-             pred["x"] + pred["width"] / 2,
+        xyxy = np.array([ 
+            [pred["x"] - pred["width"] / 2, 
+             pred["y"] - pred["height"] / 2, 
+             pred["x"] + pred["width"] / 2, 
              pred["y"] + pred["height"] / 2]
             for pred in preds
         ])
@@ -93,15 +115,13 @@ def detect():
             data={"class_name": class_name}
         )
 
-         # Tambahkan label ke data
+        # Tambahkan label ke data
         detections.data["class_name"] = [f"{c} ({conf:.2f})" for c, conf in zip(class_name, confidence)]
 
         # Baca gambar dan anotasi
         image_cv2 = cv2.imread(image_path)
         box_annotator = sv.BoxAnnotator(thickness=4)
-
         label_annotator = sv.LabelAnnotator()
-
         labels = [f"{c} ({conf:.2f})" for c, conf in zip(class_name, confidence)]
 
         image_with_box = box_annotator.annotate(
@@ -115,7 +135,7 @@ def detect():
             labels=labels
         )
 
-        # Simpan hasil
+        # Simpan hasil anotasi
         output_filename = "annotated_" + os.path.basename(image_path)
         output_path = os.path.join(app.config['RESULT_FOLDER'], output_filename)
         success = cv2.imwrite(output_path, annotated_image)
@@ -123,11 +143,17 @@ def detect():
         if not success:
             return jsonify({"reply": "❌ Gagal menyimpan hasil gambar."}), 500
 
-        # Kirim URL hasil ke frontend
-        return jsonify({
-            "predictions": preds,
-            "annotated_image": f"/static/results/{output_filename}"
-        })
+        # Upload hasil ke Vercel Blob
+        image_url = upload_to_vercel_blob(output_path)
+
+        if image_url:
+            return jsonify({
+                "predictions": preds,
+                "annotated_image": image_url,
+                "reply": "✅ Gambar berhasil di-upload ke Vercel Blob!"
+            })
+        else:
+            return jsonify({"reply": "❌ Gagal meng-upload gambar ke Vercel Blob."}), 500
 
     except Exception as e:
         traceback.print_exc()
