@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+<link rel="icon" type="image/png" href="../assets/img/logos/Lettuce.png">
+<title>Disease Classification - Lettuce Growth | SMK Negeri 4 Barru</title>
+
+<!-- Fonts and icons -->
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
+<!-- Font Awesome Icons -->
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+<!-- Material Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+<!-- CSS Files -->
+<link id="pagestyle" href="./assets/css/material-kit.css?v=3.1.0" rel="stylesheet" />
+</head>
+
+<body class="index-page bg-gray-200">
+  
+  
+<!-- Navbar -->
+<div class="container position-sticky z-index-sticky top-0"><div class="row"><div class="col-12">
+<nav class="navbar navbar-expand-lg blur border-radius-xl top-0 z-index-fixed shadow position-absolute my-3 p-2 start-0 end-0 mx-4">
+  <div class="container-fluid px-0">
+    <a class="navbar-brand font-weight-bolder ms-sm-3 text-sm" href="/" rel="tooltip" data-placement="bottom">
+      Lettuce Growth
+    </a>
+    <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon mt-2">
+        <span class="navbar-toggler-bar bar1"></span>
+        <span class="navbar-toggler-bar bar2"></span>
+        <span class="navbar-toggler-bar bar3"></span>
+      </span>
+    </button>
+    <div class="collapse navbar-collapse pt-3 pb-2 py-lg-0 w-100" id="navigation">
+      <ul class="navbar-nav navbar-nav-hover ms-auto">
+        <li class="nav-item mx-2">
+          <a class="nav-link ps-2 d-flex cursor-pointer align-items-center font-weight-semibold" href="/">
+            <i class="material-symbols-rounded opacity-6 me-2 text-md">dashboard</i>
+            Features
+          </a>
+        </li>
+        <li class="nav-item mx-2">
+          <a class="nav-link ps-2 d-flex cursor-pointer align-items-center font-weight-semibold" href="/">
+            <i class="material-symbols-rounded opacity-6 me-2 text-md">view_day</i>
+            Missions
+          </a>
+        </li>
+        <li class="nav-item mx-2">
+          <a class="nav-link ps-2 d-flex cursor-pointer align-items-center font-weight-semibold" href="/">
+            <i class="material-symbols-rounded opacity-6 me-2 text-md">article</i>
+            Docs
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- End Navbar -->
+</div></div></div>
+
+<header class="header-2">
+  <div class="page-header min-vh-75 relative" style="background-image: url('./assets/img/background/bailey-heedick-WOrgNVcptD8-unsplash.jpg')">
+    <span class="mask bg-gradient-dark opacity-4"></span>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-7 text-center mx-auto">
+          <h1 class="text-white font-weight-black pt-3 mt-n5">Smart Lettuce Growth Detection</h1>
+          <p class="text-white mt-3">
+            Empower your farming decisions with AI. 
+            Instantly detect lettuce growth stages using computer vision to boost productivity and precision in the field.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="card card-body blur shadow-blur mx-3 mx-md-4 mt-n6">
+
+<div id="docs"></div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-center">Real-Time Lettuce Growth Detection</h4>
+            <div class="text-center">
+                <button id="startCamera" class="btn btn-success">Start Camera for Real-Time Detection</button>
+                <button id="uploadImage" class="btn btn-primary">Upload Image</button>
+            </div>
+            <div id="cameraPreview" class="mt-3" style="display:none;">
+                <video id="video" autoplay playsinline width="100%"></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <button id="takePhoto" class="btn btn-warning mt-3">Take Photo</button>
+            </div>
+            <div id="imageUpload" style="display:none;">
+                <input type="file" id="fileInput" accept="image/*">
+                <button id="submitImage" class="btn btn-warning mt-3">Submit Image</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detectionResult" class="mt-5" style="display: none;">
+      <h4 class="text-center">Detection Result</h4>
+      <div class="row mt-3">
+        <!-- Kolom kiri: Gambar hasil -->
+        <div class="col-md-7 text-center">
+          <img id="annotatedImage" src="" style="max-width: 100%; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none;" alt="Detection Result Image">
+        </div>
+        
+        <!-- Kolom kanan: Hasil JSON -->
+        <div class="col-md-5">
+          <div class="card shadow-sm border-0 p-3">
+            <h6 class="mb-2 font-weight-bold">Prediction Details</h6>
+            <pre id="jsonResult" style="font-size: 0.85rem; background: #f8f9fa; padding: 10px; border-radius: 6px; height: 400px; overflow-y: auto;"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<footer class="footer pt-5 mt-5">
+  <div class="container">
+    <div class=" row">
+      <div class="col-md-3 mb-4 ms-auto">
+        <div>
+          <a href="#home">
+            <img src="./assets/img/logos/Lettuce.png" class="mb-3 footer-logo" alt="main_logo">
+          </a>
+          <h6 class="font-weight-bolder mb-4">Lettuce Growth</h6>
+        </div>
+        <div>
+          <ul class="d-flex flex-row ms-n3 nav">
+            <li class="nav-item">
+              <a class="nav-link pe-1" href="https://www.facebook.com/LettuceGrowth" target="_blank">
+                <i class="fab fa-facebook text-lg opacity-8"></i>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link pe-1" href="https://twitter.com/LettuceGrowth" target="_blank">
+                <i class="fab fa-twitter text-lg opacity-8"></i>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link pe-1" href="https://www.instagram.com/LettuceGrowth" target="_blank">
+                <i class="fab fa-instagram text-lg opacity-8"></i>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link pe-1" href="https://www.linkedin.com/company/LettuceGrowth" target="_blank">
+                <i class="fab fa-linkedin text-lg opacity-8"></i>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link pe-1" href="https://www.youtube.com/c/LettuceGrowth" target="_blank">
+                <i class="fab fa-youtube text-lg opacity-8"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+  <div class="col-md-2 col-sm-6 col-6 mb-4">
+  <div>
+    <h6 class="text-sm">Company</h6>
+    <ul class="flex-column ms-n3 nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#about-us">
+          About Lettuce Growth
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#mission">
+          Our Mission
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#team">
+          Meet the Team
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#blog">
+          Blog
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="col-md-2 col-sm-6 col-6 mb-4">
+  <div>
+    <h6 class="text-sm">Resources</h6>
+    <ul class="flex-column ms-n3 nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#support">
+          Support Center
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#resources">
+          Lettuce Resources
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#affiliate-program">
+          Affiliate Program
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="col-md-2 col-sm-6 col-6 mb-4">
+  <div>
+    <h6 class="text-sm">Help & Support</h6>
+    <ul class="flex-column ms-n3 nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#contact-us">
+          Contact Us
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#faq">
+          FAQ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#custom-help">
+          Personalized Support
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="col-md-2 col-sm-6 col-6 mb-4 me-auto">
+  <div>
+    <h6 class="text-sm">Legal</h6>
+    <ul class="flex-column ms-n3 nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#terms-conditions">
+          Terms & Conditions
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#privacy-policy">
+          Privacy Policy
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#licenses">
+          Licenses
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+      
+      <div class="col-12">
+      <div class="text-center">
+        <p class="text-dark my-4 text-sm font-weight-normal">
+          All rights reserved. Copyright © <script>document.write(new Date().getFullYear())</script> Lettuce Growth. Built with precision for sustainable farming and agricultural innovation.
+          Developed by <a href="#" target="_blank">Lettuce Growth Team</a>. Connect with us for technical support, farm insights, and partnership opportunities.
+        </p>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</footer>
+
+<!--   Core JS Files   -->
+<script src="./assets/js/core/popper.min.js" type="text/javascript"></script>
+<script src="./assets/js/core/bootstrap.min.js" type="text/javascript"></script>
+<script src="./assets/js/plugins/perfect-scrollbar.min.js"></script>
+
+<!--  Plugin for TypedJS, full documentation here: https://github.com/inorganik/CountUp.js -->
+<script src="./assets/js/plugins/countup.min.js"></script>
+<script src="./assets/js/plugins/choices.min.js"></script>
+<script src="./assets/js/plugins/prism.min.js"></script>
+<script src="./assets/js/plugins/highlight.min.js"></script>
+<!--  Plugin for Parallax, full documentation here: https://github.com/dixonandmoe/rellax -->
+<script src="./assets/js/plugins/rellax.min.js"></script>
+<!--  Plugin for TiltJS, full documentation here: https://gijsroge.github.io/tilt.js/ -->
+<script src="./assets/js/plugins/tilt.min.js"></script>
+<!--  Plugin for Selectpicker - ChoicesJS, full documentation here: https://github.com/jshjohnson/Choices -->
+<script src="./assets/js/plugins/choices.min.js"></script>
+<!--  Google Maps Plugin    -->
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
+<script src="./assets/js/material-kit.min.js?v=3.1.0" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+  if (document.getElementById('state1')) {
+    const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
+    if (!countUp.error) {
+      countUp.start();
+    } else {
+      console.error(countUp.error);
+    }
+  }
+  if (document.getElementById('state2')) {
+    const countUp1 = new CountUp('state2', document.getElementById("state2").getAttribute("countTo"));
+    if (!countUp1.error) {
+      countUp1.start();
+    } else {
+      console.error(countUp1.error);
+    }
+  }
+  if (document.getElementById('state3')) {
+    const countUp2 = new CountUp('state3', document.getElementById("state3").getAttribute("countTo"));
+    if (!countUp2.error) {
+      countUp2.start();
+    } else {
+      console.error(countUp2.error);
+    };
+  }
+    const videoElement = document.getElementById("video");
+    const startCameraButton = document.getElementById("startCamera");
+    const uploadImageButton = document.getElementById("uploadImage");
+    const cameraPreview = document.getElementById("cameraPreview");
+    const imageUpload = document.getElementById("imageUpload");
+    const detectionResult = document.getElementById("detectionResult");
+    const jsonResult = document.getElementById("jsonResult");
+    const takePhotoButton = document.getElementById("takePhoto");
+    const fileInput = document.getElementById("fileInput");
+    const submitImageButton = document.getElementById("submitImage");
+
+    let currentStream;
+
+    startCameraButton.addEventListener("click", () => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    currentStream = stream;
+                    videoElement.srcObject = stream;
+                    cameraPreview.style.display = "block";
+                    startCameraButton.style.display = "none";
+                    uploadImageButton.style.display = "none";
+                })
+                .catch((err) => {
+                    alert("Camera access denied");
+                });
+        }
+    });
+
+    takePhotoButton.addEventListener("click", () => {
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext("2d");
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL("image/jpeg");
+
+        fetch('/detect', {
+            method: 'POST',
+            body: JSON.stringify({ camera_image: imageData }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            jsonResult.textContent = JSON.stringify(result, null, 2);
+            detectionResult.style.display = "block";
+        })
+        .catch(error => console.error(error));
+    });
+
+    uploadImageButton.addEventListener("click", () => {
+        cameraPreview.style.display = "none";
+        imageUpload.style.display = "block";
+    });
+
+    submitImageButton.addEventListener("click", () => {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const imageData = reader.result;
+
+                fetch('/detect', {
+                    method: 'POST',
+                    body: JSON.stringify({ camera_image: imageData }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    jsonResult.textContent = JSON.stringify(result.predictions, null, 2);
+                    detectionResult.style.display = "block";
+
+                    if (result.annotated_image) {
+                        const img = document.getElementById("annotatedImage");
+                        img.src = result.annotated_image;
+                        img.style.display = "block";
+                    }
+                })
+                .catch(error => console.error(error));
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+</body>
+
+</html>
